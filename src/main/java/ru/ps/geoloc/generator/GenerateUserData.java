@@ -10,7 +10,7 @@ public class GenerateUserData {
 
     private static final double RANGE_MIN = 0.0;
     private static final double RANGE_MAX = 90.0;
-    private static final String USERS_DATA_PATH = "geoUserLabelsSmall.csv";
+    private static final String USERS_DATA_PATH = "geoUserLabels.csv";
 
     public static void generateUsersData() throws IOException {
         File file = new File(USERS_DATA_PATH);

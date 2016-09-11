@@ -27,7 +27,6 @@ public class GeoLabel {
     @Column(name = "title_y")
     public Integer cellY;
 
-
     public Integer getUserId() {
         return userId;
     }
@@ -66,5 +65,16 @@ public class GeoLabel {
 
     public void setCellY(Integer cellY) {
         this.cellY = cellY;
+    }
+
+    @Override
+    public String toString() {
+        return "GeoLabel{" +
+                "userId=" + userId +
+                ", lon=" + lon +
+                ", lat=" + lat +
+                ", cellX=" + cellX +
+                ", cellY=" + cellY +
+                '}';
     }
 }

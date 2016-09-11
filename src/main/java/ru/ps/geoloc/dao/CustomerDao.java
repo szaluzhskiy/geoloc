@@ -21,33 +21,21 @@ public class CustomerDao implements InitializingBean {
 
     private HibernateTemplate hibernateTemplate;
 
-    public boolean createUpdateCustomer(CreateUpdateCustomerRequest request) {
-        if (request != null && request.getUserID() != 0 && !checkIfCustomerExists(request.getUserID())) {
+    public boolean createUpdateCustomer(GeoLabel gl) {
+        if (gl != null && gl.getUserId() != 0 && !checkIfCustomerExists(gl.getUserId())) {
             if (LOG.isDebugEnabled())
-                LOG.debug("Create new user id = " + request.getUserID() + " lon = " + request.getLon() + " lat = " + request.getLat() + "");
-            GeoLabel gl = new GeoLabel();
-            gl.setUserId(request.getUserID());
-            gl.setLon(request.getLon());
-            gl.setLat(request.getLat());
-            gl.setCellX(request.getLon().intValue());
-            gl.setCellY(request.getLat().intValue());
+                LOG.debug("Create new user id = " + gl.getUserId() + " lon = " + gl.getLon() + " lat = " + gl.getLat() + "");
             hibernateTemplate.saveOrUpdate(gl);
             hibernateTemplate.flush();
             if (LOG.isDebugEnabled())
-                LOG.debug("User with id = " + request.getUserID() + " created");
+                LOG.debug("User with id = " + gl.getUserId() + " created");
             return true;
         }
         return false;
     }
 
-    public boolean updateExistingCustomer(CreateUpdateCustomerRequest customer) {
-        if (customer != null && checkIfCustomerExists(customer.getUserID())) {
-            GeoLabel gl = new GeoLabel();
-            gl.setUserId(customer.getUserID());
-            gl.setLon(customer.getLon());
-            gl.setLat(customer.getLat());
-            gl.setCellX(LonLatToMetersConverter.lon2xCell(customer.getLon()));
-            gl.setCellY(LonLatToMetersConverter.lat2yCell(customer.getLat().intValue()));
+    public boolean updateExistingCustomer(GeoLabel gl) {
+        if (gl != null && checkIfCustomerExists(gl.getUserId())) {
             GeoLabel mergedGl = hibernateTemplate.merge(gl);
             hibernateTemplate.saveOrUpdate(mergedGl);
             hibernateTemplate.flush();
@@ -108,4 +96,6 @@ public class CustomerDao implements InitializingBean {
             throw new IllegalArgumentException("Property \'hibernateTemplate\' is required");
         }
     }
+
+
 }

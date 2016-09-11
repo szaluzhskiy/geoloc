@@ -16,7 +16,7 @@ public class CustomerProcessor {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public String createNewCustomer(CreateUpdateCustomerRequest customer) {
-        return customerDao.createUpdateCustomer(customer) ? SUCCESS_OPERATION_RESPONSE : FAILED_OPERATION_RESPONSE;
+        return customerDao.createUpdateCustomer(GeoLabelBuilder.buildGeoLabel(customer)) ? SUCCESS_OPERATION_RESPONSE : FAILED_OPERATION_RESPONSE;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -26,7 +26,7 @@ public class CustomerProcessor {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public String updateCustomer(CreateUpdateCustomerRequest customer) {
-        return customerDao.updateExistingCustomer(customer) ? SUCCESS_OPERATION_RESPONSE : FAILED_OPERATION_RESPONSE;
+        return customerDao.updateExistingCustomer(GeoLabelBuilder.buildGeoLabel(customer)) ? SUCCESS_OPERATION_RESPONSE : FAILED_OPERATION_RESPONSE;
     }
 
     /**
@@ -34,7 +34,7 @@ public class CustomerProcessor {
      * @param userId
      * @return X, Y of geo cell in which user is located
      */
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public String findCustomerLocation(Integer userId) {
         String responseString;
         GeoLabel geoLabel = customerDao.findCustomerByUserId(userId);
@@ -42,7 +42,7 @@ public class CustomerProcessor {
             int geoLabelLon = LonLatToMetersConverter.lon2xCell(geoLabel.getLon());
             int geoLabelLat = LonLatToMetersConverter.lat2yCell(geoLabel.getLat());
             GeoCell geoCell = customerDao.findGeoCell(geoLabelLon, geoLabelLat);
-            if ((geoLabel.getLon() - geoCell.getTile_x() > geoCell.getDistance_error()) || (geoLabel.getLat() - geoCell.getTile_y() > geoCell.getDistance_error())) {
+            if (((geoLabel.getLon() - geoLabel.getLon().intValue()) > geoCell.getDistance_error()) || ((geoLabel.getLat() - geoLabel.getLat().intValue()) > geoCell.getDistance_error())) {
                 responseString = "User location is outside of distance error. Cell coordinates x=" + geoCell.getTile_x() + ";y=" + geoCell.getTile_y();
             } else {
                 responseString = "User location is inside cell. Cell coordinates x=" + geoCell.getTile_x() + ";y=" + geoCell.getTile_y();
@@ -67,5 +67,20 @@ public class CustomerProcessor {
 
     public void setCustomerDao(CustomerDao customerDao) {
         this.customerDao = customerDao;
+    }
+
+    private static class GeoLabelBuilder {
+        public static GeoLabel buildGeoLabel(CreateUpdateCustomerRequest customer) {
+            GeoLabel gl = new GeoLabel();
+            if(customer != null) {
+                gl.setUserId(customer.getUserID());
+                gl.setLon(customer.getLon());
+                gl.setLat(customer.getLat());
+                gl.setCellX(LonLatToMetersConverter.lon2xCell(customer.getLon()));
+                gl.setCellY(LonLatToMetersConverter.lat2yCell(customer.getLat()));
+            }
+            System.out.println("GeoLabel = " + gl.toString());
+            return gl;
+        }
     }
 }

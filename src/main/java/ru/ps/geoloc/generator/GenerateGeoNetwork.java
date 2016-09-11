@@ -9,7 +9,7 @@ public class GenerateGeoNetwork {
     private static final String DESCREPANCY_ERROR = "0.3";
     private static final double NETWORK_X = 50;
     private static final double NETWORK_Y = 1120;
-    private static final String GEOGRAFICAL_NET_PATH = "geoNetSmall.csv";
+    private static final String GEOGRAFICAL_NET_PATH = "geoNet.csv";
 
     public static void generateGeograficNet() throws IOException {
         File file = new File(GEOGRAFICAL_NET_PATH);

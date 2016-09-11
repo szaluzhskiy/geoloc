@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import ru.ps.geoloc.processors.InitProcessor;
 import ru.ps.geoloc.processors.CustomerProcessor;
 
-
 @RestController
 public class CustomerService {
     private final static AtomicBoolean isInitialized = new AtomicBoolean(false);
@@ -74,7 +73,7 @@ public class CustomerService {
     @RequestMapping(value = "/cell", method = RequestMethod.GET)
     @Produces(MediaType.TEXT_PLAIN)
     public @ResponseBody String findNumberOfUsersInCell(@RequestParam("x") Optional<String> titleX, @RequestParam("y") Optional<String> titleY) {
-        StringBuilder result = new StringBuilder("");
+        StringBuilder result = new StringBuilder();
         if (titleX.isPresent() && titleY.isPresent()) {
             result.append(customerProcessor.findNumberOfUsersInCell(Integer.parseInt(titleX.get()), Integer.parseInt(titleY.get())));
         }
@@ -88,8 +87,6 @@ public class CustomerService {
         result.append(customerProcessor.findNumberOfCustomers());
         return result.toString();
     }
-
-
 
     @RequestMapping(value = "echo", method = RequestMethod.GET)
     @Produces(MediaType.TEXT_PLAIN)
